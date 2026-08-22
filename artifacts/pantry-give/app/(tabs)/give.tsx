@@ -8,9 +8,9 @@ import { Donation, usePantry } from '@/context/PantryContext';
 
 const C = colors.light;
 const foodBanks = [
-  { id: 'northside', name: 'Northside Community Pantry', distance: '1.8 mi away', coordinate: { latitude: 37.78825, longitude: -122.4324 }, short: 'Northside Pantry' },
-  { id: 'open-table', name: 'Open Table Food Bank', distance: '3.2 mi away', coordinate: { latitude: 37.7839, longitude: -122.4215 }, short: 'Open Table' },
-  { id: 'harvest', name: 'Harvest Neighbors', distance: '4.6 mi away', coordinate: { latitude: 37.7938, longitude: -122.414 }, short: 'Harvest Neighbors' },
+  { id: 'northside', name: 'Northside Community Pantry', distance: '2.9 km away', coordinate: { latitude: 1.3691, longitude: 103.8485 }, short: 'Northside Pantry' },
+  { id: 'open-table', name: 'Open Table Food Bank', distance: '4.2 km away', coordinate: { latitude: 1.3148, longitude: 103.8561 }, short: 'Open Table' },
+  { id: 'harvest', name: 'Harvest Neighbors', distance: '5.8 km away', coordinate: { latitude: 1.3344, longitude: 103.7422 }, short: 'Harvest Neighbors' },
 ];
 
 export default function GiveScreen() {
@@ -36,11 +36,14 @@ export default function GiveScreen() {
     {showForm && <View style={styles.form}><Text style={styles.formTitle}>What would you like to share?</Text><Text style={styles.formBank}><Feather name="map-pin" size={13} color={C.primary} /> Going to {selectedBank.short}</Text><TextInput value={title} onChangeText={setTitle} placeholder="e.g. Fresh vegetables" placeholderTextColor={C.mutedForeground} style={styles.input} /><TextInput value={quantity} onChangeText={setQuantity} placeholder="Quantity or serving size" placeholderTextColor={C.mutedForeground} style={styles.input} /><Pressable onPress={post} style={styles.save}><Text style={styles.saveText}>Publish listing</Text></Pressable></View>}
     <View style={styles.listHeader}><Text style={styles.sectionTitle}>Choose a food bank</Text><Text style={styles.nearby}><Feather name="navigation" size={13} color={C.primary} /> Your area</Text></View>
     <View style={styles.mapWrap}>
-      <View style={styles.mapFallback}>
-        <View style={styles.mapRoadOne} /><View style={styles.mapRoadTwo} /><View style={styles.mapWater} />
-        <Text style={styles.mapLabel}>YOUR NEIGHBORHOOD</Text>
-        {foodBanks.map((bank, index) => <Pressable key={bank.id} testID={`map-marker-${bank.id}`} onPress={() => setSelectedBankId(bank.id)} style={[styles.mapPin, index === 0 ? { left: '28%', top: '38%' } : index === 1 ? { left: '61%', top: '57%' } : { left: '73%', top: '22%' }, selectedBankId === bank.id && styles.mapPinSelected]}><Feather name="heart" size={14} color="#FFFFFF" /></Pressable>)}
-      </View>
+       <View style={styles.mapFallback} accessibilityLabel="Map of Singapore food banks">
+         <View style={styles.singaporeIsland} />
+         <View style={[styles.mapRoad, styles.roadOne]} /><View style={[styles.mapRoad, styles.roadTwo]} />
+         <View style={[styles.mapRoad, styles.roadThree]} /><View style={[styles.mapRoad, styles.roadFour]} />
+         <View style={styles.mapLabel}><Text style={styles.mapLabelText}>SINGAPORE</Text><Text style={styles.mapSubLabel}>COMMUNITY FOOD NETWORK</Text></View>
+         <Text style={[styles.areaLabel, styles.areaNorth]}>WOODLANDS</Text><Text style={[styles.areaLabel, styles.areaCentral]}>CENTRAL</Text><Text style={[styles.areaLabel, styles.areaWest]}>JURONG</Text><Text style={[styles.areaLabel, styles.areaEast]}>EAST COAST</Text>
+         {foodBanks.map((bank, index) => <Pressable key={bank.id} testID={`map-marker-${bank.id}`} onPress={() => setSelectedBankId(bank.id)} style={[styles.mapPin, index === 0 ? styles.pinNorth : index === 1 ? styles.pinCentral : styles.pinWest, selectedBankId === bank.id && styles.mapPinSelected]}><Feather name="heart" size={14} color="#FFFFFF" /></Pressable>)}
+       </View>
       <View style={styles.mapLegend}><View style={styles.legendIcon}><Feather name="heart" size={14} color="#FFFFFF" /></View><View><Text style={styles.selectedLabel}>SELECTED FOOD BANK</Text><Text style={styles.selectedName}>{selectedBank.name}</Text><Text style={styles.selectedDistance}>{selectedBank.distance}</Text></View><Feather name="check-circle" size={19} color={C.primary} style={{ marginLeft: 'auto' }} /></View>
     </View>
     <Text style={styles.mapHint}>Tap a marker to choose where your donation goes</Text>
@@ -90,13 +93,26 @@ const styles = StyleSheet.create({
   noteText: { color: C.mutedForeground, fontSize: 11, lineHeight: 16, flex: 1 },
   formBank: { color: C.mutedForeground, fontSize: 11, marginBottom: 2 },
   mapWrap: { height: 285, borderRadius: 20, overflow: 'hidden', backgroundColor: '#DDEBDD', marginBottom: 7, position: 'relative' },
-  map: { flex: 1 },
-  mapFallback: { flex: 1, backgroundColor: '#DDEBDD', overflow: 'hidden' },
-  mapRoadOne: { position: 'absolute', backgroundColor: '#F7F5EF', width: '150%', height: 18, transform: [{ rotate: '-23deg' }], top: 95, left: -65 },
-  mapRoadTwo: { position: 'absolute', backgroundColor: '#F7F5EF', width: '150%', height: 12, transform: [{ rotate: '46deg' }], top: 88, left: -30 },
-  mapWater: { position: 'absolute', backgroundColor: '#BFD8E0', width: 170, height: 170, borderRadius: 95, right: -50, bottom: -62, opacity: .7 },
-  mapLabel: { position: 'absolute', top: 18, left: 20, color: '#6C7A70', fontSize: 9, fontWeight: '700', letterSpacing: 1.3 },
-  mapPin: { position: 'absolute', height: 32, width: 32, borderRadius: 18, backgroundColor: '#6C7A70', borderWidth: 3, borderColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', shadowColor: '#17352C', shadowOpacity: .18, shadowRadius: 5 },
+   map: { flex: 1 },
+   mapFallback: { flex: 1, backgroundColor: '#CFE3E4', overflow: 'hidden' },
+   singaporeIsland: { position: 'absolute', width: '76%', height: '70%', left: '12%', top: '12%', backgroundColor: '#DDEBDD', borderRadius: 58, transform: [{ rotate: '-8deg' }] },
+   mapRoad: { position: 'absolute', backgroundColor: '#F7F5EF', opacity: .85, height: 5, borderRadius: 4 },
+   roadOne: { width: '74%', left: '13%', top: '43%', transform: [{ rotate: '-13deg' }] },
+   roadTwo: { width: '62%', left: '20%', top: '57%', transform: [{ rotate: '24deg' }] },
+   roadThree: { width: '58%', left: '22%', top: '31%', transform: [{ rotate: '58deg' }] },
+   roadFour: { width: '55%', left: '24%', top: '67%', transform: [{ rotate: '-55deg' }] },
+   mapLabel: { position: 'absolute', top: 18, left: 20 },
+   mapLabelText: { color: '#476355', fontSize: 12, fontWeight: '800', letterSpacing: 2 },
+   mapSubLabel: { color: '#6C7A70', fontSize: 8, fontWeight: '700', letterSpacing: 1.1, marginTop: 3 },
+   areaLabel: { position: 'absolute', color: '#6C7A70', fontSize: 8, fontWeight: '700', letterSpacing: .6 },
+   areaNorth: { top: '23%', left: '29%' },
+   areaCentral: { top: '48%', left: '44%' },
+   areaWest: { top: '57%', left: '21%' },
+   areaEast: { top: '54%', right: '15%' },
+   mapPin: { position: 'absolute', height: 32, width: 32, borderRadius: 18, backgroundColor: '#6C7A70', borderWidth: 3, borderColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', shadowColor: '#17352C', shadowOpacity: .18, shadowRadius: 5 },
+   pinNorth: { top: '27%', left: '62%' },
+   pinCentral: { top: '49%', left: '55%' },
+   pinWest: { top: '55%', left: '28%' },
   mapPinSelected: { backgroundColor: C.primary, transform: [{ scale: 1.2 }] },
   mapLegend: { position: 'absolute', left: 12, right: 12, bottom: 12, backgroundColor: '#FFFFFF', borderRadius: 14, padding: 10, flexDirection: 'row', alignItems: 'center', gap: 9, shadowColor: '#17352C', shadowOpacity: .12, shadowRadius: 8 },
   legendIcon: { backgroundColor: C.primary, height: 30, width: 30, borderRadius: 10, justifyContent: 'center', alignItems: 'center' },

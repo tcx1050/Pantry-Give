@@ -31,6 +31,10 @@ function NativeTabLayout() {
         <Icon sf={{ default: 'person', selected: 'person.fill' }} />
         <Label>Profile</Label>
       </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="support">
+        <Icon sf={{ default: 'bubble.left', selected: 'bubble.left.fill' }} />
+        <Label>Support</Label>
+      </NativeTabs.Trigger>
     </NativeTabs>
   );
 }
@@ -88,6 +92,7 @@ function ClassicTabLayout() {
       <Tabs.Screen name="give" options={{ title: 'Give', tabBarIcon: ({ color }) => isIOS ? <SymbolView name="heart" tintColor={color} size={24} /> : <Feather name="heart" size={22} color={color} /> }} />
       <Tabs.Screen name="recipes" options={{ title: 'Recipes', tabBarIcon: ({ color }) => isIOS ? <SymbolView name="book" tintColor={color} size={24} /> : <Feather name="book-open" size={22} color={color} /> }} />
       <Tabs.Screen name="profile" options={{ title: 'Profile', tabBarIcon: ({ color }) => isIOS ? <SymbolView name="person" tintColor={color} size={24} /> : <Feather name="user" size={22} color={color} /> }} />
+      <Tabs.Screen name="support" options={{ title: 'Support', tabBarIcon: ({ color }) => isIOS ? <SymbolView name="message" tintColor={color} size={24} /> : <Feather name="message-circle" size={22} color={color} /> }} />
     </Tabs>
   );
 }
