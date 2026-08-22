@@ -1,0 +1,24 @@
+kind = "mobile"
+previewPath = "/pantry-give/"
+title = "Pantry & Give"
+description = "A mobile app that helps people track pantry ingredients, plan what they need, and donate surplus food to food banks through a dedicated giving portal."
+version = "1.0.0"
+id = "artifacts/pantry-give"
+router = "expo-domain"
+
+[[services]]
+name = "expo"
+ensurePreviewReachable = "/status"
+paths = [ "/pantry-give/" ]
+localPort = 22183
+
+[services.development]
+run = "pnpm --filter @workspace/pantry-give run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/pantry-give", "run", "build" ]
+run = [ "pnpm", "--filter", "@workspace/pantry-give", "run", "serve" ]
+
+[services.env]
+PORT = "22183"
+BASE_PATH = "/pantry-give/"
