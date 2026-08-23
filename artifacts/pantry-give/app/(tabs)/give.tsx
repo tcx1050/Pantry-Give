@@ -3,10 +3,15 @@ import React, { useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
+import { Image } from 'expo-image';
 import colors from '@/constants/colors';
 import { Donation, usePantry } from '@/context/PantryContext';
 
 const C = colors.light;
+const donationImages: Record<string, number> = {
+  'fresh produce box': require('../../assets/images/food/spinach.jpg'),
+  'canned soup & beans': require('../../assets/images/food/chickpeas.jpg'),
+};
 const foodBanks = [
   { id: 'northside', name: 'Northside Community Pantry', distance: '2.9 km away', coordinate: { latitude: 1.3691, longitude: 103.8485 }, short: 'Northside Pantry' },
   { id: 'open-table', name: 'Open Table Food Bank', distance: '4.2 km away', coordinate: { latitude: 1.3148, longitude: 103.8561 }, short: 'Open Table' },
@@ -47,7 +52,7 @@ export default function GiveScreen() {
       <View style={styles.mapLegend}><View style={styles.legendIcon}><Feather name="heart" size={14} color="#FFFFFF" /></View><View><Text style={styles.selectedLabel}>SELECTED FOOD BANK</Text><Text style={styles.selectedName}>{selectedBank.name}</Text><Text style={styles.selectedDistance}>{selectedBank.distance}</Text></View><Feather name="check-circle" size={19} color={C.primary} style={{ marginLeft: 'auto' }} /></View>
     </View>
     <Text style={styles.mapHint}>Tap a marker to choose where your donation goes</Text>
-    {donations.map((item: Donation) => <View key={item.id} style={styles.donationCard}><View style={styles.donationTop}><View style={styles.foodIcon}><Feather name="package" size={20} color={C.foreground} /></View><View style={{ flex: 1 }}><Text style={styles.donationTitle}>{item.title}</Text><Text style={styles.donationMeta}>{item.quantity}</Text></View><View style={[styles.badge, item.status === 'Claimed' && styles.claimed]}><Text style={styles.badgeText}>{item.status}</Text></View></View><View style={styles.divider} /><View style={styles.details}><View><Text style={styles.detailLabel}>FOOD BANK</Text><Text style={styles.detailValue}>{item.foodBank}</Text><Text style={styles.detailMuted}>{item.distance}</Text></View><View><Text style={styles.detailLabel}>PICKUP</Text><Text style={styles.detailValue}>{item.pickup}</Text></View></View>{item.status === 'Available' && <Pressable onPress={() => Alert.alert('Claim this food?', 'This will let the giver know you are interested.', [{ text: 'Not now', style: 'cancel' }, { text: 'Claim listing', onPress: () => { markDonationClaimed(item.id); Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success); } }])} style={styles.claimButton}><Text style={styles.claimText}>I can help with this</Text><Feather name="arrow-up-right" size={16} color={C.foreground} /></Pressable>}</View>)}
+     {donations.map((item: Donation) => <View key={item.id} style={styles.donationCard}><View style={styles.donationTop}><View style={styles.foodIcon}>{donationImages[item.title.toLowerCase()] ? <Image source={donationImages[item.title.toLowerCase()]} contentFit="cover" style={styles.donationImage} /> : <Feather name="package" size={20} color={C.foreground} />}</View><View style={{ flex: 1 }}><Text style={styles.donationTitle}>{item.title}</Text><Text style={styles.donationMeta}>{item.quantity}</Text></View><View style={[styles.badge, item.status === 'Claimed' && styles.claimed]}><Text style={styles.badgeText}>{item.status}</Text></View></View><View style={styles.divider} /><View style={styles.details}><View><Text style={styles.detailLabel}>FOOD BANK</Text><Text style={styles.detailValue}>{item.foodBank}</Text><Text style={styles.detailMuted}>{item.distance}</Text></View><View><Text style={styles.detailLabel}>PICKUP</Text><Text style={styles.detailValue}>{item.pickup}</Text></View></View>{item.status === 'Available' && <Pressable onPress={() => Alert.alert('Claim this food?', 'This will let the giver know you are interested.', [{ text: 'Not now', style: 'cancel' }, { text: 'Claim listing', onPress: () => { markDonationClaimed(item.id); Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success); } }])} style={styles.claimButton}><Text style={styles.claimText}>I can help with this</Text><Feather name="arrow-up-right" size={16} color={C.foreground} /></Pressable>}</View>)}
     <View style={styles.note}><Feather name="shield" size={16} color={C.mutedForeground} /><Text style={styles.noteText}>Please only share unopened, in-date food. Food banks will confirm pickup details with you.</Text></View>
   </ScrollView>;
 }
@@ -76,7 +81,8 @@ const styles = StyleSheet.create({
   nearby: { color: C.primary, fontWeight: '700', fontSize: 12 },
   donationCard: { backgroundColor: '#FFFFFF', borderRadius: 18, padding: 15, marginBottom: 12 },
   donationTop: { flexDirection: 'row', alignItems: 'center', gap: 11 },
-  foodIcon: { height: 43, width: 43, borderRadius: 14, backgroundColor: '#F7D9A8', justifyContent: 'center', alignItems: 'center' },
+   foodIcon: { height: 43, width: 43, borderRadius: 14, backgroundColor: '#F7D9A8', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' },
+   donationImage: { height: '100%', width: '100%' },
   donationTitle: { color: C.foreground, fontWeight: '700', fontSize: 15 },
   donationMeta: { color: C.mutedForeground, marginTop: 4, fontSize: 12 },
   badge: { backgroundColor: '#DDEBDD', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 5 },
