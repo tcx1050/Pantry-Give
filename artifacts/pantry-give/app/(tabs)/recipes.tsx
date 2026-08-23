@@ -25,7 +25,7 @@ const recipes: Recipe[] = [
   { id: 'r2', name: 'Golden rice & beans', description: 'Comforting pantry staples with a warm, herby finish.', time: '35 min', difficulty: 'Easy', ingredients: ['rice', 'beans', 'olive oil'], tone: '#F7D9A8', icon: 'coffee', image: require('../../assets/images/food/rice.jpg') },
   { id: 'r3', name: 'Green pantry pasta', description: 'A flexible weeknight recipe for greens that need using.', time: '25 min', difficulty: 'Easy', ingredients: ['spinach', 'pasta', 'garlic'], tone: '#DDEBDD', icon: 'zap', image: require('../../assets/images/food/pasta.jpg') },
   { id: 'r4', name: 'Roasted vegetable toast', description: 'Turn a few almost-too-ripe vegetables into a crisp lunch.', time: '30 min', difficulty: 'Easy', ingredients: ['vegetables', 'bread', 'olive oil'], tone: '#F7C9BE', icon: 'heart', image: require('../../assets/images/food/toast.jpg') },
-  { id: 'r5', name: 'Tomato chickpea stew', description: 'A one-pot dinner with deep flavor and very little effort.', time: '40 min', difficulty: 'Easy', ingredients: ['chickpeas', 'tomato', 'onion'], tone: '#F7D9A8', icon: 'package' },
+  { id: 'r5', name: 'Tomato chickpea stew', description: 'A one-pot dinner with deep flavor and very little effort.', time: '40 min', difficulty: 'Easy', ingredients: ['chickpeas', 'tomato', 'onion'], tone: '#F7D9A8', icon: 'package', image: require('../../assets/images/food/vegetables.jpg') },
 ];
 
 export default function RecipesScreen() {
