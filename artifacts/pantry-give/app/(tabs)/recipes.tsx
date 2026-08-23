@@ -1,4 +1,5 @@
 import { Feather } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import React, { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -16,14 +17,15 @@ type Recipe = {
   ingredients: string[];
   tone: string;
   icon: string;
+  image: number;
 };
 
 const recipes: Recipe[] = [
-  { id: 'r1', name: 'Chickpea & spinach bowl', description: 'A bright, filling bowl for the days you want something fast.', time: '20 min', difficulty: 'Easy', ingredients: ['chickpeas', 'spinach', 'olive oil'], tone: '#F7C9BE', icon: 'sun' },
-  { id: 'r2', name: 'Golden rice & beans', description: 'Comforting pantry staples with a warm, herby finish.', time: '35 min', difficulty: 'Easy', ingredients: ['rice', 'beans', 'olive oil'], tone: '#F7D9A8', icon: 'coffee' },
-  { id: 'r3', name: 'Green pantry pasta', description: 'A flexible weeknight recipe for greens that need using.', time: '25 min', difficulty: 'Easy', ingredients: ['spinach', 'pasta', 'garlic'], tone: '#DDEBDD', icon: 'zap' },
-  { id: 'r4', name: 'Roasted vegetable toast', description: 'Turn a few almost-too-ripe vegetables into a crisp lunch.', time: '30 min', difficulty: 'Easy', ingredients: ['vegetables', 'bread', 'olive oil'], tone: '#F7C9BE', icon: 'heart' },
-  { id: 'r5', name: 'Tomato chickpea stew', description: 'A one-pot dinner with deep flavor and very little effort.', time: '40 min', difficulty: 'Easy', ingredients: ['chickpeas', 'tomato', 'onion'], tone: '#F7D9A8', icon: 'package' },
+  { id: 'r1', name: 'Chickpea & spinach bowl', description: 'A bright, filling bowl for the days you want something fast.', time: '20 min', difficulty: 'Easy', ingredients: ['chickpeas', 'spinach', 'olive oil'], tone: '#F7C9BE', icon: 'sun', image: require('../../assets/images/food/chickpeas.jpg') },
+  { id: 'r2', name: 'Golden rice & beans', description: 'Comforting pantry staples with a warm, herby finish.', time: '35 min', difficulty: 'Easy', ingredients: ['rice', 'beans', 'olive oil'], tone: '#F7D9A8', icon: 'coffee', image: require('../../assets/images/food/rice.jpg') },
+  { id: 'r3', name: 'Green pantry pasta', description: 'A flexible weeknight recipe for greens that need using.', time: '25 min', difficulty: 'Easy', ingredients: ['spinach', 'pasta', 'garlic'], tone: '#DDEBDD', icon: 'zap', image: require('../../assets/images/food/pasta.jpg') },
+  { id: 'r4', name: 'Roasted vegetable toast', description: 'Turn a few almost-too-ripe vegetables into a crisp lunch.', time: '30 min', difficulty: 'Easy', ingredients: ['vegetables', 'bread', 'olive oil'], tone: '#F7C9BE', icon: 'heart', image: require('../../assets/images/food/toast.jpg') },
+  { id: 'r5', name: 'Tomato chickpea stew', description: 'A one-pot dinner with deep flavor and very little effort.', time: '40 min', difficulty: 'Easy', ingredients: ['chickpeas', 'tomato', 'onion'], tone: '#F7D9A8', icon: 'package', image: require('../../assets/images/food/vegetables.jpg') },
 ];
 
 export default function RecipesScreen() {
@@ -48,7 +50,7 @@ export default function RecipesScreen() {
       {pantryNames.map((name) => <Pressable key={name} testID={`ingredient-chip-${name}`} onPress={() => setActiveIngredient(activeIngredient === name ? null : name)} style={[styles.chip, activeIngredient === name && styles.chipActive]}><Text style={[styles.chipText, activeIngredient === name && styles.chipTextActive]}>{name}</Text></Pressable>)}
     </ScrollView>
     <View style={styles.resultsHeader}><Text style={styles.sectionTitle}>{activeIngredient ? `Recipes with ${activeIngredient}` : 'Good matches for you'}</Text><Text style={styles.resultCount}>{visibleRecipes.length} found</Text></View>
-    {visibleRecipes.map((recipe) => <View key={recipe.id} style={styles.recipeCard}><View style={styles.recipeTop}><View style={[styles.recipeIcon, { backgroundColor: recipe.tone }]}><Feather name={recipe.icon as 'sun'} size={21} color={C.foreground} /></View><View style={{ flex: 1 }}><Text style={styles.recipeName}>{recipe.name}</Text><Text style={styles.recipeDescription}>{recipe.description}</Text></View><Pressable testID={`bookmark-${recipe.id}`} accessibilityLabel={`${favoriteRecipeIds.includes(recipe.id) ? 'Remove' : 'Save'} ${recipe.name}`} onPress={() => toggleFavoriteRecipe(recipe.id)} hitSlop={10}><Feather name={favoriteRecipeIds.includes(recipe.id) ? 'bookmark' : 'bookmark'} size={18} color={favoriteRecipeIds.includes(recipe.id) ? C.primary : C.mutedForeground} /></Pressable></View><View style={styles.recipeBottom}><View style={styles.recipeMeta}><Feather name="clock" size={13} color={C.mutedForeground} /><Text style={styles.metaText}>{recipe.time}</Text><View style={styles.metaDot} /><Text style={styles.metaText}>{recipe.difficulty}</Text></View><View style={styles.match}><Feather name="check" size={12} color={C.primary} /><Text style={styles.matchText}>{recipe.ingredients.filter((item) => pantryNames.some((name) => name.toLowerCase().includes(item))).length} pantry matches</Text></View></View></View>)}
+    {visibleRecipes.map((recipe) => <View key={recipe.id} style={styles.recipeCard}><View style={styles.recipeTop}><Image source={recipe.image} contentFit="cover" style={styles.recipeImage} /><View style={{ flex: 1 }}><Text style={styles.recipeName}>{recipe.name}</Text><Text style={styles.recipeDescription}>{recipe.description}</Text></View><Pressable testID={`bookmark-${recipe.id}`} accessibilityLabel={`${favoriteRecipeIds.includes(recipe.id) ? 'Remove' : 'Save'} ${recipe.name}`} onPress={() => toggleFavoriteRecipe(recipe.id)} hitSlop={10}><Feather name="bookmark" size={18} color={favoriteRecipeIds.includes(recipe.id) ? C.primary : C.mutedForeground} /></Pressable></View><View style={styles.recipeBottom}><View style={styles.recipeMeta}><Feather name="clock" size={13} color={C.mutedForeground} /><Text style={styles.metaText}>{recipe.time}</Text><View style={styles.metaDot} /><Text style={styles.metaText}>{recipe.difficulty}</Text></View><View style={styles.match}><Feather name="check" size={12} color={C.primary} /><Text style={styles.matchText}>{recipe.ingredients.filter((item) => pantryNames.some((name) => name.toLowerCase().includes(item))).length} pantry matches</Text></View></View></View>)}
     {visibleRecipes.length === 0 && <View style={styles.empty}><Feather name="search" size={24} color={C.mutedForeground} /><Text style={styles.emptyTitle}>No recipes yet</Text><Text style={styles.emptyCopy}>Try searching for a different leftover ingredient.</Text></View>}
     <View style={styles.tip}><Feather name="refresh-cw" size={15} color={C.primary} /><Text style={styles.tipText}>Recipes are suggestions — swap ingredients freely and make them your own.</Text></View>
   </ScrollView>;
@@ -76,7 +78,7 @@ const styles = StyleSheet.create({
   resultCount: { color: C.mutedForeground, fontSize: 11, fontWeight: '600' },
   recipeCard: { backgroundColor: '#FFFFFF', borderRadius: 18, padding: 14, marginBottom: 10 },
   recipeTop: { flexDirection: 'row', gap: 11, alignItems: 'flex-start' },
-  recipeIcon: { height: 52, width: 52, borderRadius: 15, justifyContent: 'center', alignItems: 'center' },
+  recipeImage: { height: 58, width: 58, borderRadius: 15 },
   recipeName: { color: C.foreground, fontSize: 15, fontWeight: '700', marginTop: 1 },
   recipeDescription: { color: C.mutedForeground, fontSize: 11, lineHeight: 16, marginTop: 5, paddingRight: 5 },
   recipeBottom: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderTopWidth: 1, borderTopColor: C.border, marginTop: 13, paddingTop: 11 },

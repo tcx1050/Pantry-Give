@@ -9,6 +9,12 @@ import colors from '@/constants/colors';
 import { Ingredient, usePantry } from '@/context/PantryContext';
 
 const C = colors.light;
+const ingredientImages: Record<string, number> = {
+  'brown rice': require('../../assets/images/food/rice.jpg'),
+  chickpeas: require('../../assets/images/food/chickpeas.jpg'),
+  'baby spinach': require('../../assets/images/food/spinach.jpg'),
+  'olive oil': require('../../assets/images/food/vegetables.jpg'),
+};
 
 export default function PantryScreen() {
   const insets = useSafeAreaInsets();
@@ -61,7 +67,7 @@ export default function PantryScreen() {
       </View>}
       <View style={styles.search}><Feather name="search" size={18} color={C.mutedForeground} /><TextInput value={query} onChangeText={setQuery} placeholder="Search ingredients" placeholderTextColor={C.mutedForeground} style={styles.searchInput} /></View>
       {filtered.map((item: Ingredient) => <Pressable key={item.id} onLongPress={() => removeIngredient(item.id)} style={styles.itemRow}>
-        <View style={styles.itemDot}><Text style={styles.dotText}>{item.name.charAt(0)}</Text></View>
+        <View style={styles.itemDot}>{ingredientImages[item.name.toLowerCase()] ? <Image source={ingredientImages[item.name.toLowerCase()]} contentFit="cover" style={styles.ingredientImage} /> : <Text style={styles.dotText}>{item.name.charAt(0)}</Text>}</View>
         <View style={{ flex: 1 }}><Text style={styles.itemName}>{item.name}</Text><Text style={styles.itemMeta}>{item.quantity} · {item.category}</Text></View>
         <View style={{ alignItems: 'flex-end' }}><Text style={[styles.expiry, item.expires === 'Tomorrow' && { color: C.primary }]}>{item.expires}</Text><Text style={styles.expiryLabel}>{item.expires === 'Tomorrow' ? 'use soon' : 'best before'}</Text></View>
       </Pressable>)}
@@ -97,7 +103,8 @@ const styles = StyleSheet.create({
   search: { backgroundColor: '#FFFFFF', borderRadius: 13, paddingHorizontal: 14, flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
   searchInput: { flex: 1, paddingVertical: 13, paddingLeft: 10, color: C.foreground, fontSize: 14 },
   itemRow: { backgroundColor: '#FFFFFF', borderRadius: 16, padding: 14, flexDirection: 'row', alignItems: 'center', marginBottom: 9 },
-  itemDot: { height: 38, width: 38, borderRadius: 12, backgroundColor: '#E7EFE8', justifyContent: 'center', alignItems: 'center', marginRight: 12 },
+  itemDot: { height: 38, width: 38, borderRadius: 12, backgroundColor: '#E7EFE8', justifyContent: 'center', alignItems: 'center', marginRight: 12, overflow: 'hidden' },
+  ingredientImage: { height: '100%', width: '100%' },
   dotText: { color: C.foreground, fontWeight: '700', fontSize: 16 },
   itemName: { color: C.foreground, fontWeight: '700', fontSize: 15 },
   itemMeta: { color: C.mutedForeground, fontSize: 12, marginTop: 4 },
