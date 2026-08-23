@@ -1,17 +1,104 @@
 import { Feather } from '@expo/vector-icons';
 import React from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import colors from '@/constants/colors';
 import { usePantry } from '@/context/PantryContext';
 
 const C = colors.light;
+const mascot = require('../../assets/images/mascot.png');
+
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const { ingredients, donations, points, favoriteRecipeIds } = usePantry();
-  const level = points >= 300 ? 'Community Champion' : points >= 200 ? 'Food Friend' : 'New Neighbor';
-  const nextLevel = points >= 300 ? points : 200;
-  const progress = points >= 300 ? 1 : Math.min(points / nextLevel, 1);
-  return <ScrollView style={styles.screen} contentContainerStyle={{ paddingTop: insets.top + 18, paddingBottom: 110 }}><Text style={styles.eyebrow}>YOUR SPACE</Text><Text style={styles.title}>Profile</Text><View style={styles.profileCard}><View style={styles.avatar}><Text style={styles.avatarText}>AM</Text></View><View><Text style={styles.name}>Alex Morgan</Text><Text style={styles.sub}>Kindness starts at home</Text></View><Feather name="edit-2" size={17} color={C.mutedForeground} style={{ marginLeft: 'auto' }} /></View><View style={styles.loyaltyCard}><View style={styles.loyaltyTop}><View><Text style={styles.loyaltyEyebrow}>YOUR LOYALTY LEVEL</Text><Text style={styles.level}>{level}</Text></View><View style={styles.pointsPill}><Text style={styles.pointsNumber}>{points}</Text><Text style={styles.pointsLabel}>points</Text></View></View><View style={styles.progressTrack}><View style={[styles.progressFill, { width: `${Math.max(progress * 100, 5)}%` }]} /></View><Text style={styles.progressText}>{points >= 300 ? 'You’ve unlocked every community reward' : `${nextLevel - points} points to your next reward`}</Text><View style={styles.rewardRow}><View style={styles.rewardIcon}><Feather name="gift" size={16} color={C.foreground} /></View><View style={{ flex: 1 }}><Text style={styles.rewardTitle}>Plant a seed</Text><Text style={styles.rewardCopy}>Add ingredients or share food to earn points</Text></View><Feather name="check-circle" size={18} color={C.primary} /></View></View><View style={styles.stats}><View><Text style={styles.number}>{ingredients.length}</Text><Text style={styles.label}>pantry items</Text></View><View><Text style={styles.number}>{donations.filter((item) => item.status === 'Claimed').length}</Text><Text style={styles.label}>food shared</Text></View><View><Text style={styles.number}>{points}</Text><Text style={styles.label}>loyalty points</Text></View></View><View style={styles.savedHeader}><Text style={styles.section}>Saved recipes</Text><Text style={styles.savedCount}>{favoriteRecipeIds.length} saved</Text></View>{favoriteRecipeIds.length === 0 && <View style={styles.emptySaved}><Feather name="bookmark" size={18} color={C.mutedForeground} /><Text style={styles.emptySavedText}>Bookmark recipes you want to make later.</Text></View>}<Text style={styles.section}>Preferences</Text>{['Notifications', 'Pickup preferences', 'Food safety guide'].map((label, index) => <Pressable key={label} style={styles.row}><View style={styles.rowIcon}><Feather name={index === 0 ? 'bell' : index === 1 ? 'clock' : 'shield'} size={17} color={C.foreground} /></View><Text style={styles.rowText}>{label}</Text><Feather name="chevron-right" size={18} color={C.mutedForeground} /></Pressable>)}<View style={styles.footer}><Feather name="heart" size={17} color={C.primary} /><Text style={styles.footerText}>Every item tracked is one less thing wasted.</Text></View></ScrollView>;
+  const claimedDonations = donations.filter((item) => item.status === 'Claimed').length;
+
+  return (
+    <ScrollView style={styles.screen} contentContainerStyle={{ paddingTop: insets.top + 12, paddingBottom: 110 }} showsVerticalScrollIndicator={false}>
+      <View style={styles.topBar}>
+        <View style={styles.backCircle}><Feather name="arrow-left" size={17} color={C.foreground} /></View>
+        <Text style={styles.topTitle}>Pantry Give Points</Text>
+        <View style={styles.topSpacer} />
+      </View>
+
+      <View style={styles.pointsCard}>
+        <View style={styles.pointsCopy}>
+          <Text style={styles.cardEyebrow}>YOUR POINTS</Text>
+          <Text style={styles.points}>{points.toLocaleString()}</Text>
+          <Text style={styles.pointsDescription}>Keep making a difference.{'\n'}Every good deed counts.</Text>
+        </View>
+        <Image source={mascot} style={styles.mascot} resizeMode="contain" />
+        <View style={styles.sparkle}><Feather name="star" size={13} color="#E39B32" /></View>
+      </View>
+
+      <View style={styles.sectionHeading}>
+        <Text style={styles.sectionTitle}>How to earn</Text>
+        <Text style={styles.sectionHint}>Small actions, big impact</Text>
+      </View>
+      <View style={styles.earnCard}>
+        <EarnRow icon="package" title="Track food" detail="Add an item to your pantry" points="+20 pts" />
+        <EarnRow icon="heart" title="Share food" detail="Give an item to a neighbor" points="+50 pts" />
+        <EarnRow icon="book-open" title="Save a recipe" detail="Keep a recipe for later" points="+10 pts" />
+        <EarnRow icon="refresh-cw" title="Waste less" detail="Use what you already have" points="+15 pts" last />
+      </View>
+
+      <Pressable style={styles.rewardsButton} onPress={() => Alert.alert('Rewards coming soon', 'Keep earning points and we’ll let you know when new community rewards are available.')}>
+        <Text style={styles.rewardsText}>View Rewards</Text>
+        <Feather name="arrow-up-right" size={16} color="#FFFFFF" />
+      </Pressable>
+
+      <View style={styles.impactCard}>
+        <View><Text style={styles.impactNumber}>{ingredients.length}</Text><Text style={styles.impactLabel}>pantry items</Text></View>
+        <View><Text style={styles.impactNumber}>{claimedDonations}</Text><Text style={styles.impactLabel}>food shared</Text></View>
+        <View><Text style={styles.impactNumber}>{favoriteRecipeIds.length}</Text><Text style={styles.impactLabel}>recipes saved</Text></View>
+      </View>
+
+      <View style={styles.savedHeader}><Text style={styles.sectionTitle}>Saved recipes</Text><Text style={styles.savedCount}>{favoriteRecipeIds.length} saved</Text></View>
+      {favoriteRecipeIds.length === 0 && <View style={styles.emptySaved}><Feather name="bookmark" size={18} color={C.mutedForeground} /><Text style={styles.emptySavedText}>Bookmark recipes you want to make later.</Text></View>}
+      <Text style={styles.sectionTitle}>Preferences</Text>
+      {['Notifications', 'Pickup preferences', 'Food safety guide'].map((label, index) => <Pressable key={label} style={styles.preferenceRow}><View style={styles.rowIcon}><Feather name={index === 0 ? 'bell' : index === 1 ? 'clock' : 'shield'} size={16} color={C.foreground} /></View><Text style={styles.rowText}>{label}</Text><Feather name="chevron-right" size={17} color={C.mutedForeground} /></Pressable>)}
+    </ScrollView>
+  );
 }
-const styles = StyleSheet.create({ screen: { flex: 1, backgroundColor: C.background, paddingHorizontal: 20 }, eyebrow: { color: C.mutedForeground, fontSize: 11, fontWeight: '700', letterSpacing: 1.5 }, title: { color: C.foreground, fontSize: 31, fontWeight: '700', marginTop: 4, marginBottom: 22, letterSpacing: -1 }, profileCard: { backgroundColor: '#FFFFFF', borderRadius: 18, padding: 16, flexDirection: 'row', alignItems: 'center', gap: 13 }, avatar: { height: 52, width: 52, borderRadius: 26, backgroundColor: '#F7C9BE', justifyContent: 'center', alignItems: 'center' }, avatarText: { color: C.foreground, fontWeight: '700', fontSize: 15 }, name: { color: C.foreground, fontSize: 17, fontWeight: '700' }, sub: { color: C.mutedForeground, fontSize: 12, marginTop: 5 }, loyaltyCard: { backgroundColor: '#F7C9BE', borderRadius: 20, padding: 18, marginTop: 14 }, loyaltyTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }, loyaltyEyebrow: { color: '#6F7F70', fontSize: 10, fontWeight: '700', letterSpacing: 1.3 }, level: { color: C.foreground, fontSize: 19, fontWeight: '700', marginTop: 6 }, pointsPill: { backgroundColor: '#FFFFFF', borderRadius: 12, paddingHorizontal: 11, paddingVertical: 8, alignItems: 'center' }, pointsNumber: { color: C.foreground, fontSize: 18, fontWeight: '700' }, pointsLabel: { color: C.foreground, fontSize: 9, fontWeight: '700' }, progressTrack: { height: 7, backgroundColor: '#EAB0A5', borderRadius: 5, marginTop: 19, overflow: 'hidden' }, progressFill: { height: '100%', backgroundColor: '#6B9B63', borderRadius: 5 }, progressText: { color: '#5E6C61', fontSize: 11, marginTop: 8 }, rewardRow: { borderTopWidth: 1, borderTopColor: '#EAB0A5', marginTop: 14, paddingTop: 13, flexDirection: 'row', alignItems: 'center', gap: 9 }, rewardIcon: { height: 30, width: 30, borderRadius: 9, backgroundColor: '#DDEBDD', justifyContent: 'center', alignItems: 'center' }, rewardTitle: { color: C.foreground, fontSize: 12, fontWeight: '700' }, rewardCopy: { color: '#5E6C61', fontSize: 10, marginTop: 2 }, stats: { backgroundColor: '#DDEBDD', borderRadius: 18, padding: 18, marginVertical: 14, flexDirection: 'row', justifyContent: 'space-around' }, number: { color: C.foreground, fontSize: 21, fontWeight: '700', textAlign: 'center' }, label: { color: '#4D6655', fontSize: 11, marginTop: 4 }, savedHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }, savedCount: { color: C.mutedForeground, fontSize: 12, fontWeight: '600' }, emptySaved: { backgroundColor: '#FFFFFF', borderRadius: 14, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 }, emptySavedText: { color: C.mutedForeground, fontSize: 12 }, section: { color: C.foreground, fontSize: 20, fontWeight: '700', marginTop: 10, marginBottom: 11 }, row: { backgroundColor: '#FFFFFF', padding: 14, borderRadius: 14, flexDirection: 'row', alignItems: 'center', marginBottom: 8 }, rowIcon: { height: 32, width: 32, borderRadius: 10, backgroundColor: C.muted, justifyContent: 'center', alignItems: 'center', marginRight: 11 }, rowText: { color: C.foreground, fontSize: 14, fontWeight: '600', flex: 1 }, footer: { flexDirection: 'row', gap: 8, justifyContent: 'center', alignItems: 'center', marginTop: 24 }, footerText: { color: C.mutedForeground, fontSize: 11 } });
+
+function EarnRow({ icon, title, detail, points, last = false }: { icon: React.ComponentProps<typeof Feather>['name']; title: string; detail: string; points: string; last?: boolean }) {
+  return <View style={[styles.earnRow, last && styles.lastEarnRow]}><View style={styles.earnIcon}><Feather name={icon} size={16} color={C.primary} /></View><View style={styles.earnCopy}><Text style={styles.earnTitle}>{title}</Text><Text style={styles.earnDetail}>{detail}</Text></View><Text style={styles.earnPoints}>{points}</Text><Feather name="chevron-right" size={15} color={C.mutedForeground} /></View>;
+}
+
+const styles = StyleSheet.create({
+  screen: { flex: 1, backgroundColor: C.background, paddingHorizontal: 20 },
+  topBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 },
+  backCircle: { height: 32, width: 32, borderRadius: 16, backgroundColor: '#FFFFFF', justifyContent: 'center', alignItems: 'center' },
+  topTitle: { color: C.foreground, fontSize: 14, fontWeight: '700' },
+  topSpacer: { width: 32 },
+  pointsCard: { minHeight: 170, backgroundColor: '#FFF2D8', borderRadius: 20, padding: 18, overflow: 'hidden', flexDirection: 'row', marginBottom: 22 },
+  pointsCopy: { flex: 1, zIndex: 1 },
+  cardEyebrow: { color: '#7C806F', fontSize: 10, fontWeight: '800', letterSpacing: 1.2 },
+  points: { color: C.foreground, fontSize: 36, fontWeight: '800', letterSpacing: -1, marginTop: 5 },
+  pointsDescription: { color: '#687362', fontSize: 11, lineHeight: 16, marginTop: 10 },
+  mascot: { width: 124, height: 100, position: 'absolute', right: 8, bottom: 8 },
+  sparkle: { position: 'absolute', right: 122, top: 52, height: 24, width: 24, borderRadius: 12, backgroundColor: '#FFFFFF', justifyContent: 'center', alignItems: 'center' },
+  sectionHeading: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 },
+  sectionTitle: { color: C.foreground, fontSize: 19, fontWeight: '800' },
+  sectionHint: { color: C.mutedForeground, fontSize: 10, fontWeight: '600' },
+  earnCard: { backgroundColor: '#FFFFFF', borderRadius: 17, paddingHorizontal: 13, paddingVertical: 2, marginBottom: 14 },
+  earnRow: { minHeight: 57, flexDirection: 'row', alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#EEF0E9', gap: 9 },
+  lastEarnRow: { borderBottomWidth: 0 },
+  earnIcon: { height: 30, width: 30, borderRadius: 10, backgroundColor: '#E7EFE8', alignItems: 'center', justifyContent: 'center' },
+  earnCopy: { flex: 1 },
+  earnTitle: { color: C.foreground, fontSize: 12, fontWeight: '800' },
+  earnDetail: { color: C.mutedForeground, fontSize: 10, marginTop: 3 },
+  earnPoints: { color: C.primary, fontSize: 10, fontWeight: '800' },
+  rewardsButton: { backgroundColor: C.primary, minHeight: 46, borderRadius: 11, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 9, marginBottom: 14 },
+  rewardsText: { color: '#FFFFFF', fontWeight: '800', fontSize: 13 },
+  impactCard: { backgroundColor: '#DDEBDD', borderRadius: 17, padding: 15, flexDirection: 'row', justifyContent: 'space-around', marginBottom: 22 },
+  impactNumber: { color: C.foreground, fontSize: 19, fontWeight: '800', textAlign: 'center' },
+  impactLabel: { color: '#4D6655', fontSize: 10, marginTop: 3 },
+  savedHeader: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 10 },
+  savedCount: { color: C.mutedForeground, fontSize: 11, fontWeight: '600' },
+  emptySaved: { backgroundColor: '#FFFFFF', borderRadius: 14, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 16 },
+  emptySavedText: { color: C.mutedForeground, fontSize: 12 },
+  preferenceRow: { backgroundColor: '#FFFFFF', padding: 13, borderRadius: 14, flexDirection: 'row', alignItems: 'center', marginTop: 8 },
+  rowIcon: { height: 31, width: 31, borderRadius: 10, backgroundColor: C.muted, justifyContent: 'center', alignItems: 'center', marginRight: 11 },
+  rowText: { color: C.foreground, fontSize: 13, fontWeight: '600', flex: 1 },
+});
