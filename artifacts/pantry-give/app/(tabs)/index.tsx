@@ -13,6 +13,7 @@ const ingredientImages: Record<string, number> = {
   'brown rice': require('../../assets/images/food/rice.jpg'),
   chickpeas: require('../../assets/images/food/chickpeas.jpg'),
   'baby spinach': require('../../assets/images/food/spinach.jpg'),
+  'olive oil': require('../../assets/images/food/olive-oil.webp'),
 };
 
 export default function PantryScreen() {
