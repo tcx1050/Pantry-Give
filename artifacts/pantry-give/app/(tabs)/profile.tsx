@@ -4,6 +4,7 @@ import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'rea
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import colors from '@/constants/colors';
 import { usePantry } from '@/context/PantryContext';
+import { useClerk, useUser } from '@clerk/expo';
 
 const C = colors.light;
 const mascot = require('../../assets/images/mascot.png');
@@ -11,7 +12,19 @@ const mascot = require('../../assets/images/mascot.png');
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const { ingredients, donations, points, favoriteRecipeIds } = usePantry();
+  const { user } = useUser();
+  const { signOut } = useClerk();
   const claimedDonations = donations.filter((item) => item.status === 'Claimed').length;
+  const displayName = user?.fullName || user?.firstName || 'Pantry friend';
+  const email = user?.primaryEmailAddress?.emailAddress || 'Account email';
+  const initials = displayName.split(' ').map((part) => part.charAt(0)).join('').slice(0, 2).toUpperCase();
+
+  const confirmSignOut = () => {
+    Alert.alert('Sign out?', 'Your local pantry stays on this device, and you can sign back in any time.', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Sign out', style: 'destructive', onPress: () => signOut() },
+    ]);
+  };
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={{ paddingTop: insets.top + 12, paddingBottom: 110 }} showsVerticalScrollIndicator={false}>
@@ -29,6 +42,17 @@ export default function ProfileScreen() {
         </View>
         <Image source={mascot} style={styles.mascot} resizeMode="contain" />
         <View style={styles.sparkle}><Feather name="star" size={13} color="#E39B32" /></View>
+      </View>
+
+      <View style={styles.accountCard}>
+        <View style={styles.accountAvatar}>
+          {user?.imageUrl ? <Image source={{ uri: user.imageUrl }} style={styles.accountImage} /> : <Text style={styles.accountInitials}>{initials}</Text>}
+        </View>
+        <View style={styles.accountCopy}>
+          <Text style={styles.accountName}>{displayName}</Text>
+          <Text style={styles.accountEmail}>{email}</Text>
+        </View>
+        <Feather name="check-circle" size={18} color={C.primary} />
       </View>
 
       <View style={styles.sectionHeading}>
@@ -57,6 +81,7 @@ export default function ProfileScreen() {
       {favoriteRecipeIds.length === 0 && <View style={styles.emptySaved}><Feather name="bookmark" size={18} color={C.mutedForeground} /><Text style={styles.emptySavedText}>Bookmark recipes you want to make later.</Text></View>}
       <Text style={styles.sectionTitle}>Preferences</Text>
       {['Notifications', 'Pickup preferences', 'Food safety guide'].map((label, index) => <Pressable key={label} style={styles.preferenceRow}><View style={styles.rowIcon}><Feather name={index === 0 ? 'bell' : index === 1 ? 'clock' : 'shield'} size={16} color={C.foreground} /></View><Text style={styles.rowText}>{label}</Text><Feather name="chevron-right" size={17} color={C.mutedForeground} /></Pressable>)}
+      <Pressable style={styles.signOutButton} onPress={confirmSignOut}><Feather name="log-out" size={16} color={C.destructive} /><Text style={styles.signOutText}>Sign out</Text></Pressable>
     </ScrollView>
   );
 }
@@ -78,6 +103,13 @@ const styles = StyleSheet.create({
   pointsDescription: { color: '#687362', fontSize: 11, lineHeight: 16, marginTop: 10 },
   mascot: { width: 124, height: 100, position: 'absolute', right: 8, bottom: 8 },
   sparkle: { position: 'absolute', right: 122, top: 52, height: 24, width: 24, borderRadius: 12, backgroundColor: '#FFFFFF', justifyContent: 'center', alignItems: 'center' },
+  accountCard: { backgroundColor: '#FFFFFF', borderRadius: 17, padding: 13, flexDirection: 'row', alignItems: 'center', marginBottom: 22 },
+  accountAvatar: { height: 42, width: 42, borderRadius: 21, backgroundColor: C.foreground, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+  accountImage: { height: 42, width: 42 },
+  accountInitials: { color: '#FFFFFF', fontSize: 13, fontWeight: '800' },
+  accountCopy: { flex: 1, marginLeft: 11 },
+  accountName: { color: C.foreground, fontSize: 13, fontWeight: '800' },
+  accountEmail: { color: C.mutedForeground, fontSize: 11, marginTop: 3 },
   sectionHeading: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 10 },
   sectionTitle: { color: C.foreground, fontSize: 19, fontWeight: '800' },
   sectionHint: { color: C.mutedForeground, fontSize: 10, fontWeight: '600' },
@@ -101,4 +133,6 @@ const styles = StyleSheet.create({
   preferenceRow: { backgroundColor: '#FFFFFF', padding: 13, borderRadius: 14, flexDirection: 'row', alignItems: 'center', marginTop: 8 },
   rowIcon: { height: 31, width: 31, borderRadius: 10, backgroundColor: C.muted, justifyContent: 'center', alignItems: 'center', marginRight: 11 },
   rowText: { color: C.foreground, fontSize: 13, fontWeight: '600', flex: 1 },
+  signOutButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 18 },
+  signOutText: { color: C.destructive, fontSize: 13, fontWeight: '700' },
 });

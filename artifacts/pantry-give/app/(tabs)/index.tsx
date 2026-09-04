@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import colors from '@/constants/colors';
 import { Ingredient, usePantry } from '@/context/PantryContext';
+import { useUser } from '@clerk/expo';
 
 const C = colors.light;
 const ingredientImages: Record<string, number> = {
@@ -20,12 +21,15 @@ export default function PantryScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { ingredients, addIngredient, removeIngredient } = usePantry();
+  const { user } = useUser();
   const [query, setQuery] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [name, setName] = useState('');
   const [quantity, setQuantity] = useState('');
   const filtered = ingredients.filter((item) => item.name.toLowerCase().includes(query.toLowerCase()));
   const soonCount = ingredients.filter((item) => item.expires === 'Tomorrow').length;
+  const displayName = user?.firstName || user?.fullName?.split(' ')[0] || 'friend';
+  const initials = (user?.fullName || user?.firstName || 'PG').split(' ').map((part) => part.charAt(0)).join('').slice(0, 2).toUpperCase();
 
   const save = () => {
     if (!name.trim() || !quantity.trim()) return;
@@ -41,13 +45,13 @@ export default function PantryScreen() {
           <Text style={styles.eyebrow}>SATURDAY, AUG 22</Text>
           <Text style={styles.title}>Your pantry</Text>
         </View>
-        <Pressable testID="profile-button" onPress={() => router.push('/(tabs)/profile')} style={styles.avatar}><Text style={styles.avatarText}>AM</Text></Pressable>
+        <Pressable testID="profile-button" onPress={() => router.push('/(tabs)/profile')} style={styles.avatar}><Text style={styles.avatarText}>{initials}</Text></Pressable>
       </View>
 
       <View style={styles.hero}>
         <View style={{ flex: 1 }}>
           <Text style={styles.heroKicker}>WELCOME BACK</Text>
-          <Text style={styles.heroTitle}>Hello, Alex!{'\n'}Let’s make a difference.</Text>
+          <Text style={styles.heroTitle}>Hello, {displayName}!{'\n'}Let’s make a difference.</Text>
           <Text style={styles.heroBody}>Track your food, share what you can, and help your community.</Text>
         </View>
         <View style={styles.heroIcon}><Image source={require('../../assets/images/mascot.png')} contentFit="contain" style={styles.mascot} /></View>

@@ -1,0 +1,1 @@
+- [Expo auth routing](expo-auth-routing.md) — use public `/sign-in` and `/sign-up` paths; grouped `(auth)` URLs can blank the web preview.
